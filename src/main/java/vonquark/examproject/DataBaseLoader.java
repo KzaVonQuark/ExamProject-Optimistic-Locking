@@ -30,42 +30,25 @@ public class DataBaseLoader implements ApplicationRunner {
     addUser("Anna", "Andersson", "aa@quark.von");
 
     addLaboratory("QuarkLab", "Earth orbit");
+    addLaboratory("JungleLab", "Amazon");
 
     addInstrument("abc123");
-
-    User august = mUserRepo.findByFirstName("august");
-    Laboratory quarkLab = mLaboratoryRepo.findByName("QuarkLab");
-    Instrument abc = mInstrumentRepo.findByHwId("abc123");
-
-    addUserToLaboratory(august, quarkLab);
-    addUserToInstrument(august, abc);
-
-    User john = mUserRepo.findByFirstName("john");
-    addUserToLaboratory(john, quarkLab);
-
-    addInstrumentToLaboratory(abc, quarkLab);
   }
 
   private void addInstrumentToLaboratory(Instrument instrument, Laboratory laboratory) {
     laboratory.getInstruments().add(instrument);
     mLaboratoryRepo.save(laboratory);
-    instrument.setLaboratory(laboratory);
-    mInstrumentRepo.save(instrument);
   }
 
-  private void addUserToInstrument(User user, Instrument instrument) {
+  private void addInstrumentToUser(User user, Instrument instrument) {
     user.getInstruments().add(instrument);
     mUserRepo.save(user);
-    instrument.getUsers().add(user);
-    mInstrumentRepo.save(instrument);
   }
 
-  private void addUserToLaboratory(User user, Laboratory laboratory) {
-    laboratory.getUsers().add(user);
-    mLaboratoryRepo.save(laboratory);
+  private void addLaboratoryToUser(User user, Laboratory laboratory) {
+    user.getLaboratories().add(laboratory);
+    mUserRepo.save(user);
   }
-
-
 
   private void addInstrument(String hardwareId) {
     Instrument instrument = new Instrument(hardwareId);

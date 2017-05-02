@@ -10,6 +10,12 @@ public class Instrument extends BaseEntity {
   private String hwId;
   private Date updatedAt;
 
+  @ManyToOne
+  private Laboratory laboratory;
+
+  @ManyToMany(mappedBy = "instruments")
+  private Set<User> users;
+
   public Instrument() {
     super();
   }
@@ -18,12 +24,6 @@ public class Instrument extends BaseEntity {
     this.hwId = hwId;
     this.updatedAt = new Date();
   }
-
-  @ManyToOne
-  private Laboratory laboratory;
-
-  @ManyToMany(fetch = FetchType.EAGER)
-  private Set<User> users;
 
   public String getHwId() {
     return hwId;

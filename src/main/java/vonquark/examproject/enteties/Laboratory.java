@@ -11,11 +11,10 @@ public class Laboratory extends BaseEntity {
   private String location;
   private Date updatedAt;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(mappedBy = "laboratories")
   private Set<User> users;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinColumn
   private Set<Instrument> instruments;
 
   public Laboratory() {
@@ -26,6 +25,26 @@ public class Laboratory extends BaseEntity {
     this.name = name;
     this.location = location;
     this.updatedAt = new Date();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Laboratory that = (Laboratory) o;
+
+    if (name != null ? !name.equals(that.name) : that.name != null) return false;
+    if (location != null ? !location.equals(that.location) : that.location != null) return false;
+    return updatedAt != null ? updatedAt.equals(that.updatedAt) : that.updatedAt == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = name != null ? name.hashCode() : 0;
+    result = 31 * result + (location != null ? location.hashCode() : 0);
+    result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+    return result;
   }
 
   public String getName() {

@@ -13,11 +13,9 @@ public class User extends BaseEntity {
   private Date updatedAt;
 
   @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinTable
   private Set<Instrument> instruments;
 
   @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @JoinTable
   private Set<Laboratory> laboratories;
 
   public User() {
