@@ -51,6 +51,7 @@ public class DataBaseLoader implements ApplicationRunner {
   }
 
   private void addInstrument(String hardwareId) {
+    
     Instrument instrument = new Instrument(hardwareId);
     mInstrumentRepo.save(instrument);
   }
