@@ -10,7 +10,6 @@ public class User extends BaseEntity {
   private String  firstName;
   private String lastName;
   private String userName;
-  private Date updatedAt;
 
   @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Instrument> instruments;
@@ -23,10 +22,10 @@ public class User extends BaseEntity {
   }
 
   public User(String firstName, String lastName, String userName) {
+    super();
     this.firstName = firstName;
     this.lastName = lastName;
     this.userName = userName;
-    this.updatedAt = new Date();
   }
 
   public String getFirstName() {
@@ -51,14 +50,6 @@ public class User extends BaseEntity {
 
   public void setUserName(String userName) {
     this.userName = userName;
-  }
-
-  public Date getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(Date updatedAt) {
-    this.updatedAt = updatedAt;
   }
 
   public Set<Instrument> getInstruments() {

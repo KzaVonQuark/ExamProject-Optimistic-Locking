@@ -8,7 +8,6 @@ import java.util.Set;
 public class Instrument extends BaseEntity {
 
   private String hwId;
-  private Date updatedAt;
 
   @ManyToOne
   private Laboratory laboratory;
@@ -21,8 +20,8 @@ public class Instrument extends BaseEntity {
   }
 
   public Instrument(String hwId) {
+    super();
     this.hwId = hwId;
-    this.updatedAt = new Date();
   }
 
   public String getHwId() {
@@ -31,14 +30,6 @@ public class Instrument extends BaseEntity {
 
   public void setHwId(String hwId) {
     this.hwId = hwId;
-  }
-
-  public Date getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(Date updatedAt) {
-    this.updatedAt = updatedAt;
   }
 
   public Laboratory getLaboratory() {
