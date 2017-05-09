@@ -46,9 +46,9 @@ public class DataBaseLoader implements ApplicationRunner {
     august = mUserRepo.findOne(august.getId());
     addInstrumentToUser(abc, august);
 
-    john = addLaboratoryToUser(quarkLab, john);
+    addLaboratoryToUser(quarkLab, john);
 
-    quarkLab = addInstrumentToLaboratory(abc, quarkLab);
+    addInstrumentToLaboratory(abc, quarkLab);
   }
 
   private Laboratory addInstrumentToLaboratory(Instrument instrument, Laboratory laboratory) {

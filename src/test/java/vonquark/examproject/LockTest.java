@@ -78,9 +78,12 @@ public class LockTest {
   public void testUpdateLaboratoriesAndName() throws Exception {
     sleepOneSecond();
     User roland = mUserRepo.findOne(AUGUST_ID);
-    Laboratory newLab = new Laboratory("New Lab", "Home");
-    newLab = mLaboratoryRepo.save(newLab);
-    august.getLaboratories().add(newLab);
+
+//    Laboratory newLab = new Laboratory("New Lab", "Home");
+//    newLab = mLaboratoryRepo.save(newLab);
+
+    august.getLaboratories().remove(mLaboratoryRepo.findOne(QUARKLAB_ID));
+    mUserRepo.save(august);
     saveUser(august);
 
     roland.setFirstName("Roland");
@@ -88,15 +91,12 @@ public class LockTest {
     saveUser(roland);
 
     User updatedAugust = mUserRepo.findOne(AUGUST_ID);
-    System.out.println("August " + august.getUpdatedAt());
-    System.out.println("Roland " + roland.getUpdatedAt());
-    System.out.println("Update " + updatedAugust.getUpdatedAt());
 
     assertTrue("save 'roland' should cause lock exeption", lockInPlace);
 
     assertEquals("August", updatedAugust.getFirstName());
     assertEquals("Kobb", updatedAugust.getLastName());
-    assertEquals(1, updatedAugust.getLaboratories().size());
+    assertEquals(3, updatedAugust.getLaboratories().size());
   }
 
   @Test

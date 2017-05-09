@@ -13,7 +13,7 @@ public class Laboratory extends BaseEntity {
   @ManyToMany(mappedBy = "laboratories")
   private Set<User> users;
 
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "laboratory", orphanRemoval = true, fetch = FetchType.EAGER)
   private Set<Instrument> instruments;
 
   public Laboratory() {

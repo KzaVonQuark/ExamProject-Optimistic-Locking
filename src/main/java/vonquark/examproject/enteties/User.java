@@ -1,5 +1,7 @@
 package vonquark.examproject.enteties;
 
+import org.springframework.data.jpa.repository.Lock;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
