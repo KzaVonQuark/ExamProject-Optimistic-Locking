@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @MappedSuperclass
+@EntityListeners(BaseEntityListener.class)
 public abstract class BaseEntity {
 
   @Id
@@ -13,15 +14,17 @@ public abstract class BaseEntity {
   @Version
   private Date updatedAt;
 
+  private String updatedBy;
+
   protected BaseEntity() {
     this.updatedAt = new Date();
     id = null;
   }
 
-  @PreUpdate
-  private void onUpdate() {
-    updatedAt = new Date();
-  }
+//  @PreUpdate
+//  private void onUpdate() {
+//    updatedAt = new Date();
+//  }
 
   public Integer getId() {
     return id;
@@ -29,5 +32,17 @@ public abstract class BaseEntity {
 
   public Date getUpdatedAt() {
     return updatedAt;
+  }
+
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  public String getUpdatedBy() {
+    return updatedBy;
+  }
+
+  public void setUpdatedBy(String updatedBy) {
+    this.updatedBy = updatedBy;
   }
 }

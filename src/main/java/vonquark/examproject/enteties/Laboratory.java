@@ -10,7 +10,7 @@ public class Laboratory extends BaseEntity {
   private String name;
   private String location;
 
-  @ManyToMany(mappedBy = "laboratories")
+  @ManyToMany(mappedBy = "laboratories", fetch = FetchType.EAGER)
   private Set<User> users;
 
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "laboratory", orphanRemoval = true, fetch = FetchType.EAGER)
@@ -24,6 +24,18 @@ public class Laboratory extends BaseEntity {
     super();
     this.name = name;
     this.location = location;
+  }
+
+  public void addInstrument(Instrument instrument) {
+    instruments.add(instrument);
+    instrument.setLaboratory(this);
+//    this.setUpdatedBy("ADD INSTRUMENT " + new Date());
+  }
+
+  public void removeInstrument(Instrument instrument) {
+    instruments.remove(instrument);
+    instrument.setLaboratory(null);
+//    this.setUpdatedBy("REMOVE INSTRUMENT " + new Date());
   }
 
   @Override

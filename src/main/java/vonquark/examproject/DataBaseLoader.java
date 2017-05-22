@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import vonquark.examproject.enteties.Instrument;
 import vonquark.examproject.enteties.Laboratory;
 import vonquark.examproject.enteties.User;
@@ -29,41 +30,43 @@ public class DataBaseLoader implements ApplicationRunner {
     addUser("John", "Doe", "jd@quark.von");
     addUser("Anna", "Andersson", "aa@quark.von");
 
-    addLaboratory("QuarkLab", "Earth orbit");
-    addLaboratory("JungleLab", "Amazon");
+    addLaboratory("SpaceLab", "Orbit");
+    addLaboratory("EarthLab", "Ground control");
 
-    addInstrument("abc123");
+    addInstrument("abc-80");
 
     User august = mUserRepo.findByFirstName("august");
     User john = mUserRepo.findByFirstName("john");
-    Laboratory quarkLab = mLaboratoryRepo.findByName("QuarkLab");
-    Laboratory jungleLab = mLaboratoryRepo.findByName("JungleLab");
-    Instrument abc = mInstrumentRepo.findByHwId("abc123");
+    Laboratory spaceLab = mLaboratoryRepo.findByName("SpaceLab");
+    Laboratory earthLab = mLaboratoryRepo.findByName("EarthLab");
+    Instrument abc = mInstrumentRepo.findByHwId("abc-80");
 
-    addLaboratoryToUser(quarkLab, august);
-    august = mUserRepo.findOne(august.getId());
-    addLaboratoryToUser(jungleLab, august);
-    august = mUserRepo.findOne(august.getId());
+    addLaboratoryToUser(spaceLab, august);
+    addLaboratoryToUser(earthLab, august);
     addInstrumentToUser(abc, august);
 
-    addLaboratoryToUser(quarkLab, john);
+    addLaboratoryToUser(spaceLab, john);
 
-    addInstrumentToLaboratory(abc, quarkLab);
+    addInstrumentToLaboratory(abc, spaceLab);
   }
 
-  private Laboratory addInstrumentToLaboratory(Instrument instrument, Laboratory laboratory) {
-    laboratory.getInstruments().add(instrument);
-    return mLaboratoryRepo.save(laboratory);
+  private void addInstrumentToLaboratory(Instrument instrument, Laboratory laboratory) {
+    laboratory.addInstrument(instrument);
+    mLaboratoryRepo.save(laboratory);
   }
 
-  private User addInstrumentToUser(Instrument instrument, User user) {
+  private void addInstrumentToUser(Instrument instrument, User user) {
+    user = mUserRepo.findOne(user.getId());
+    instrument = mInstrumentRepo.findOne(instrument.getId());
     user.getInstruments().add(instrument);
-    return mUserRepo.save(user);
+    mUserRepo.save(user);
   }
 
-  private User addLaboratoryToUser(Laboratory laboratory, User user) {
+  private void addLaboratoryToUser(Laboratory laboratory, User user) {
+    user = mUserRepo.findOne(user.getId());
+    laboratory = mLaboratoryRepo.findOne(laboratory.getId());
     user.getLaboratories().add(laboratory);
-    return mUserRepo.save(user);
+    mUserRepo.save(user);
   }
 
   private void addInstrument(String hardwareId) {

@@ -1,5 +1,6 @@
 package vonquark.examproject;
 
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,16 +36,18 @@ public class LockTest {
 
   private User august;
   private User john;
-  private Laboratory quarkLab;
-  private Laboratory jungleLab;
+  private Laboratory spaceLab;
+  private Laboratory earthLab;
   private Instrument abc;
   private static final Integer AUGUST_ID = 1;
   private static final Integer JOHN_ID = 2;
   private static final Integer ABC_ID = 1;
-  private static final Integer QUARKLAB_ID = 1;
-  private static final Integer JUNGLELAB_ID = 1;
+  private static final Integer SPACELAB_ID = 1;
+  private static final Integer EARTHLAB_ID = 2;
 
   private boolean lockInPlace;
+
+  private static SessionFactory factory;
 
   @Before
   public void setUp() throws Exception {
@@ -59,8 +62,8 @@ public class LockTest {
 
   @Test
   public void testUpdateName() throws Exception {
-    sleepOneSecond();
     User augustTheSecond = mUserRepo.findOne(AUGUST_ID);
+    sleepTwoSecond();
 
     august.setFirstName("Roland");
     saveUser(august);
@@ -75,52 +78,53 @@ public class LockTest {
   }
 
   @Test
-  public void testUpdateLaboratoriesAndName() throws Exception {
-    sleepOneSecond();
+  public void testManyToManyUpdate() throws Exception {
+    sleepTwoSecond();
     User roland = mUserRepo.findOne(AUGUST_ID);
 
-//    Laboratory newLab = new Laboratory("New Lab", "Home");
-//    newLab = mLaboratoryRepo.save(newLab);
+    spaceLab = mLaboratoryRepo.findOne(SPACELAB_ID);
+    spaceLab.getUsers().remove(mUserRepo.findOne(AUGUST_ID));
+    saveLaboratory(spaceLab);
 
-    august.getLaboratories().remove(mLaboratoryRepo.findOne(QUARKLAB_ID));
-    mUserRepo.save(august);
-    saveUser(august);
-
-    roland.setFirstName("Roland");
     roland.setLastName("Nilsson");
     saveUser(roland);
 
     User updatedAugust = mUserRepo.findOne(AUGUST_ID);
 
-    assertTrue("save 'roland' should cause lock exeption", lockInPlace);
+//    assertTrue("save 'roland' should cause lock exeption", lockInPlace);
 
     assertEquals("August", updatedAugust.getFirstName());
     assertEquals("Kobb", updatedAugust.getLastName());
-    assertEquals(3, updatedAugust.getLaboratories().size());
+    assertEquals(1, updatedAugust.getLaboratories().size());
   }
 
   @Test
-  public void testUpdateLaboratoryInstrument() throws Exception {
-    quarkLab = mLaboratoryRepo.findOne(QUARKLAB_ID);
-    sleepOneSecond();
-    Laboratory newQuarkLab = mLaboratoryRepo.findOne(QUARKLAB_ID);
+  public void testLaboratoryAddAndRemoveInstrument() throws Exception {
+    spaceLab = mLaboratoryRepo.findOne(SPACELAB_ID);
+    Laboratory spaceCopy = mLaboratoryRepo.findOne(SPACELAB_ID);
+
     abc = mInstrumentRepo.findOne(ABC_ID);
+    Instrument newInstrument = new Instrument("new123");
+    mInstrumentRepo.save(newInstrument);
 
-    quarkLab.getInstruments().remove(abc);
-    saveLaboratory(quarkLab);
+    addInstrumentToLab(mInstrumentRepo.findByHwId("new123"), spaceCopy);
+    sleepTwoSecond();
+    removeInstrumentFromLab(abc, spaceLab);
 
-    newQuarkLab.setName("newQuarkLab");
-    saveLaboratory(newQuarkLab);
+    spaceLab = mLaboratoryRepo.findOne(SPACELAB_ID);
 
     assertTrue(lockInPlace);
   }
 
-  private void sleepOneSecond() {
-    try {
-      TimeUnit.SECONDS.sleep(1);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+
+  private void addInstrumentToLab(Instrument instrument, Laboratory laboratory) {
+      laboratory.addInstrument(instrument);
+      saveLaboratory(laboratory);
+  }
+
+  private void removeInstrumentFromLab(Instrument instrument, Laboratory laboratory) {
+    laboratory.removeInstrument(instrument);
+    saveLaboratory(laboratory);
   }
 
   private void saveUser(User user) {
@@ -139,38 +143,46 @@ public class LockTest {
     }
   }
 
-    private void resetUsers() {
-      august = mUserRepo.findOne(AUGUST_ID);
-      august.setFirstName("August");
-      august.setLastName("Kobb");
-      august.getLaboratories().clear();
-      august.getLaboratories().add(quarkLab);
-      august.getLaboratories().add(jungleLab);
-      august.getInstruments().clear();
-      august.getInstruments().add(abc);
-      mUserRepo.save(august);
+  private void sleepTwoSecond() {
+    try {
+      TimeUnit.SECONDS.sleep(2);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
 
-      john = mUserRepo.findOne(JOHN_ID);
+  private void resetUsers() {
+    august = mUserRepo.findOne(AUGUST_ID);
+    august.setFirstName("August");
+    august.setLastName("Kobb");
+    august.getLaboratories().clear();
+    august.getLaboratories().add(spaceLab);
+    august.getLaboratories().add(earthLab);
+    august.getInstruments().clear();
+    august.getInstruments().add(abc);
+    mUserRepo.save(august);
+
+    john = mUserRepo.findOne(JOHN_ID);
     john.setFirstName("John");
     john.setLastName("Doe");
     john.getLaboratories().clear();
-    john.getLaboratories().add(quarkLab);
+    john.getLaboratories().add(spaceLab);
     john.getInstruments().clear();
     mUserRepo.save(john);
   }
 
   private void resetLaboratories() {
-    quarkLab = mLaboratoryRepo.findOne(QUARKLAB_ID);
-    quarkLab.setName("QuarkLab");
-    quarkLab.setLocation("Earth Orbit");
-    quarkLab.getInstruments().clear();
-    quarkLab.getInstruments().add(abc);
+    spaceLab = mLaboratoryRepo.findOne(SPACELAB_ID);
+    spaceLab.setName("QuarkLab");
+    spaceLab.setLocation("Earth Orbit");
+    spaceLab.getInstruments().clear();
+    spaceLab.getInstruments().add(abc);
 
-    jungleLab = mLaboratoryRepo.findOne(JUNGLELAB_ID);
-    jungleLab.setName("JungleLab");
-    jungleLab.setLocation("Amazon");
-    jungleLab.getInstruments().clear();
-    mLaboratoryRepo.save(jungleLab);
+    earthLab = mLaboratoryRepo.findOne(EARTHLAB_ID);
+    earthLab.setName("JungleLab");
+    earthLab.setLocation("Amazon");
+    earthLab.getInstruments().clear();
+    mLaboratoryRepo.save(earthLab);
   }
 
   private void resetInstruments() {

@@ -1,7 +1,6 @@
 package vonquark.examproject.enteties;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -10,9 +9,10 @@ public class Instrument extends BaseEntity {
   private String hwId;
 
   @ManyToOne
+  @JoinColumn(name = "laboratory_id", insertable = false, updatable = false)
   private Laboratory laboratory;
 
-  @ManyToMany(mappedBy = "instruments")
+  @ManyToMany(mappedBy = "instruments", fetch = FetchType.EAGER)
   private Set<User> users;
 
   public Instrument() {
@@ -22,6 +22,31 @@ public class Instrument extends BaseEntity {
   public Instrument(String hwId) {
     super();
     this.hwId = hwId;
+  }
+
+  public void addLaboratory(Laboratory laboratory) {
+    laboratory.getInstruments().add(this);
+    this.setLaboratory(laboratory);
+  }
+
+  public void removeLaboratory(Laboratory laboratory) {
+    laboratory.getInstruments().remove(this);
+    this.setLaboratory(null);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Instrument that = (Instrument) o;
+
+    return hwId != null ? hwId.equals(that.hwId) : that.hwId == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return hwId != null ? hwId.hashCode() : 0;
   }
 
   public String getHwId() {
@@ -47,4 +72,5 @@ public class Instrument extends BaseEntity {
   public void setUsers(Set<User> users) {
     this.users = users;
   }
+
 }
